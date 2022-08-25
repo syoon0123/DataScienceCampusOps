@@ -1,0 +1,370 @@
+---
+title: "Alarm Systems Dashboard"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: rows
+    vertical_layout: scroll
+
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(knitr)
+library(DT)
+library(rpivotTable)
+library(ggplot2)
+library(plotly)
+library(dplyr)
+library(openintro)
+library(highcharter)
+library(ggvis)
+library(tidyverse)
+library(ggridges)
+```
+
+
+```{r}
+data <- read.csv("/Volumes/bas-analysis/deliverable/all_years.csv")
+
+data.long<- tidyr::gather(data, key='Month', value='AlarmFreq',JUL:JUN, na.rm=TRUE)
+```
+
+
+```{r}
+data2 <- read.csv("/Volumes/bas-analysis/deliverable/all_data.csv")
+```
+
+```{r}
+data3 <- read.csv("/Volumes/bas-analysis/deliverable/all_data_with_dates.csv")
+```
+
+```{r}
+#divide into years
+data21<- data3[(data3$Year==2021),]
+data21A <- data21[(data21$Action.a..Failure.f.=="Action"),]
+data21F <- data21[(data21$Action.a..Failure.f.!="Action"),]
+
+data22<- data3[(data3$Year==2022),]
+data22A <- data22[(data22$Action.a..Failure.f.=="Action"),]
+data22F <- data22[(data22$Action.a..Failure.f.!="Action"),]
+
+data23<- data3[(data3$Year==2023),]
+data23A <- data23[(data23$Action.a..Failure.f.=="Action"),]
+data23F <- data23[(data23$Action.a..Failure.f.!="Action"),]
+
+#Group by month
+#months <- data3 %>%
+         #group_by(Month) %>%
+         #summarise(count = n())
+```
+
+
+2021 
+========================================
+
+Row
+----------------------------------------
+
+### Total Alarms Requiring Action
+
+```{r}
+
+valueBox(nrow(data21A),
+         icon = 'fa-building')
+```
+
+
+### Total Alarms Indicating Status Failure
+
+```{r}
+
+valueBox(nrow(data21F),
+         icon = 'fa-building')
+```
+
+Column
+-------------------------------
+
+### Alarms Requiring Action By Month
+```{r}
+
+xform <- list(categoryorder = "array",
+              categoryarray = data21A$Month)
+p1 <- data21A %>%
+         group_by(Month) %>%
+         summarise(count = n()) %>%
+         plot_ly(x = ~Month,
+                 y = ~count,
+                 color = "blue",
+                 type = 'bar') %>%
+  layout(title = "Alarms Requiring Action", xaxis = xform,
+yaxis = list(title = 'Alarm Frequency'))
+p1
+
+```
+
+### Alarms Failures By Month
+```{r}
+xform <- list(categoryorder = "array",
+              categoryarray = data21A$Month)
+p1 <- data21F %>%
+         group_by(Month) %>%
+         summarise(count = n()) %>%
+         plot_ly(x = ~Month,
+                 y = ~count,
+                 color = "blue",
+                 type = 'bar') %>%
+  layout(title = "Alarms Indicating Status Failure By Month", xaxis = xform,
+yaxis = list(title = 'Alarm Frequency'))
+p1
+
+```
+
+Column
+-------------------------------
+
+### Alarms Requiring Action By Building
+
+```{r}
+ph1 <- data21A %>%
+         group_by(Building) %>%
+         summarise(count = n()) %>%
+         plot_ly(x = ~Building,
+                 y = ~count,
+                 color = "blue",
+                 type = 'bar') %>%
+layout(xaxis = list(title = "Alarms Requiring Action By Building"),
+yaxis = list(title = 'Alarm Frequency'))
+ph1
+```
+
+Column
+-------------------------------
+
+### Alarms Indicating Status Failure By Building
+
+```{r}
+ph2 <- data21F %>%
+         group_by(Building) %>%
+         summarise(count = n()) %>%
+         plot_ly(x = ~Building,
+                 y = ~count,
+                 color = "blue",
+                 type = 'bar') %>%
+layout(xaxis = list(title = "Alarms Indicating Status Failure By Building"),
+yaxis = list(title = 'Alarm Frequency'))
+ph2
+```
+
+
+2022 
+========================================
+
+Row
+----------------------------------------
+
+### Total Alarms Requiring Action
+
+```{r}
+data2022<- data[(data$Year==2022),]
+dataA2022<-data2022[(data$Action.Fail=="Action"),]
+valueBox(nrow(data22A),
+         icon = 'fa-building')
+```
+
+
+### Total Alarms Indicating Status Failure
+
+```{r}
+dataF2022<-data2022[(data$Action.Fail=="Fail"),]
+valueBox(nrow(data22F),
+         icon = 'fa-building')
+```
+
+Column
+-------------------------------
+
+### Alarms Requiring Action By Month
+```{r}
+
+xform <- list(categoryorder = "array",
+              categoryarray = data22A$Month)
+p1 <- data22A %>%
+         group_by(Month) %>%
+         summarise(count = n()) %>%
+         plot_ly(x = ~Month,
+                 y = ~count,
+                 color = "blue",
+                 type = 'bar') %>%
+  layout(title = "Alarms Requiring Action", xaxis = xform,
+yaxis = list(title = 'Alarm Frequency'))
+p1
+
+```
+
+### Alarms Failures By Month
+```{r}
+xform <- list(categoryorder = "array",
+              categoryarray = data22A$Month)
+p1 <- data22F %>%
+         group_by(Month) %>%
+         summarise(count = n()) %>%
+         plot_ly(x = ~Month,
+                 y = ~count,
+                 color = "blue",
+                 type = 'bar') %>%
+  layout(title = "Alarms Indicating Status Failure By Month", xaxis = xform,
+yaxis = list(title = 'Alarm Frequency'))
+p1
+
+```
+
+Column
+-------------------------------
+
+### Alarms Requiring Action By Building
+
+```{r}
+ph1 <- data22A %>%
+         group_by(Building) %>%
+         summarise(count = n()) %>%
+         plot_ly(x = ~Building,
+                 y = ~count,
+                 color = "blue",
+                 type = 'bar') %>%
+layout(xaxis = list(title = "Alarms Requiring Action By Building"),
+yaxis = list(title = 'Alarm Frequency'))
+ph1
+```
+
+Column
+-------------------------------
+
+### Alarms Indicating Status Failure By Building
+
+```{r}
+ph2 <- data22F %>%
+         group_by(Building) %>%
+         summarise(count = n()) %>%
+         plot_ly(x = ~Building,
+                 y = ~count,
+                 color = "blue",
+                 type = 'bar') %>%
+layout(xaxis = list(title = "Alarms Indicating Status Failure By Building"),
+yaxis = list(title = 'Alarm Frequency'))
+ph2
+```
+
+
+2023 
+========================================
+
+Row
+----------------------------------------
+
+### Total Alarms Requiring Action
+
+```{r}
+data2023<- data[(data$Year==2023),]
+dataA2023<-data2023[(data$Action.Fail=="Action"),]
+valueBox(sum(dataA2023$Total, na.rm=T),
+         icon = 'fa-building')
+```
+
+
+### Total Alarms Indicating Status Failure
+
+```{r}
+dataF2023<-data2023[(data$Action.Fail=="Fail"),]
+valueBox(sum(dataF2023$Total, na.rm=T),
+         icon = 'fa-building')
+```
+
+Column
+-------------------------------
+
+### Alarms Requiring Action By Month
+```{r}
+
+xform <- list(categoryorder = "array",
+              categoryarray = data22A$Month)
+p1 <- data23A %>%
+         group_by(Month) %>%
+         summarise(count = n()) %>%
+         plot_ly(x = ~Month,
+                 y = ~count,
+                 color = "blue",
+                 type = 'bar') %>%
+  layout(title = "Alarms Requiring Action", xaxis = xform,
+yaxis = list(title = 'Alarm Frequency'))
+p1
+
+```
+
+### Alarms Failures By Month
+```{r}
+xform <- list(categoryorder = "array",
+              categoryarray = data22A$Month)
+p1 <- data23F %>%
+         group_by(Month) %>%
+         summarise(count = n()) %>%
+         plot_ly(x = ~Month,
+                 y = ~count,
+                 color = "blue",
+                 type = 'bar') %>%
+  layout(title = "Alarms Indicating Status Failure By Month", xaxis = xform,
+yaxis = list(title = 'Alarm Frequency'))
+p1
+
+```
+
+Column
+-------------------------------
+
+### Alarms Requiring Action By Building
+
+```{r}
+ph1 <- data23A %>%
+         group_by(Building) %>%
+         summarise(count = n()) %>%
+         plot_ly(x = ~Building,
+                 y = ~count,
+                 color = "blue",
+                 type = 'bar') %>%
+layout(xaxis = list(title = "Alarms Requiring Action By Building"),
+yaxis = list(title = 'Alarm Frequency'))
+ph1
+```
+
+Column
+-------------------------------
+
+### Alarms Indicating Status Failure By Building
+
+```{r}
+ph2 <- data23F %>%
+         group_by(Building) %>%
+         summarise(count = n()) %>%
+         plot_ly(x = ~Building,
+                 y = ~count,
+                 color = "blue",
+                 type = 'bar') %>%
+layout(xaxis = list(title = "Alarms Indicating Status Failure By Building"),
+yaxis = list(title = 'Alarm Frequency'))
+ph2
+```
+
+
+Data Table For All Years 
+========================================
+```{r}
+datatest<- select(data.long,-Total)
+```
+
+```{r}
+datatable(datatest,
+          caption = "All Data",
+          rownames = T,
+          filter = "top",
+          options = list(pageLength = 50))
+```
